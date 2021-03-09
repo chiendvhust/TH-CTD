@@ -1,9 +1,0 @@
-gcc Buoi1.c
-./a.out
-
-
-
-
-
-
-Chương trình của em chỉ chạy được trên những file có số lượng chữ ít ạ. Khi số lượng chữ bị nhiều sẽ bị lỗi ạ.
