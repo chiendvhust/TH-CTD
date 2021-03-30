@@ -6,7 +6,7 @@
 typedef struct word{
     char word[200];
     int count;
-    int line[500];
+    int line[300];
 } word;
 word* w;
 int NumOfTokens;
@@ -166,6 +166,9 @@ int main(){
         n++;
     }
     NumOfTokens= doctu(f1,stopw,n, NumOfTokens);
+    //sortResultAlFaBet();
+  
+    
 
     
     print();
