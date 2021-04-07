@@ -20,7 +20,7 @@ extern int currentChar;
 extern CharCode charCodes[];
 
 /***************************************************************/
-
+FILE * filetest;
 void skipBlank() {
 
   // TODO
@@ -78,20 +78,27 @@ Token* readIdentKeyword(void) {
 Token *ReadString(void)
 {
   Token *token = makeToken(TK_STRING, lineNo, colNo);
-  int ln, cn;
+  
   int i =0;
   readChar();
 
   
-  while (charCodes[currentChar] != CHAR_QUOTATION )
-  {
-    if (i > MAX_IDENT_LEN)
-      error(ERR_IDENTTOOLONG, lineNo, colNo);
+  while (charCodes[currentChar] != CHAR_QUOTATION ){
+    if (currentChar == EOF) break;
+    
+    if (i > MAX_IDENT_LEN){
+      
+      token->tokenType = TK_NONE;
+      error(ERR_IDENTTOOLONG, token->lineNo, token->colNo);
+      return token;
+    }
     token->string[i] = currentChar;
     i++;
     readChar();
   }
+  if (currentChar == EOF) error(ERR_INVALIDSTRING, lineNo, colNo);
   token->string[i] = '\0';
+
   TokenType tokentype = checkKeyword(token->string);
   if (tokentype != TK_NONE)
   {
@@ -101,24 +108,55 @@ Token *ReadString(void)
   {
     token->tokenType = TK_STRING;
   }
+  readChar();
   return token;
 }
 
-Token* readNumber(void) {
-  // TODO
-  Token *token = makeToken(TK_EOF,lineNo, colNo);
-  int i =0;
-  while(currentChar != EOF && charCodes[currentChar] == CHAR_DIGIT){
-    if(i>=MAX_IDENT_LEN) error(ERR_IDENTTOOLONG,lineNo, colNo);
-    token->string[i] = currentChar;
-    i++;
+int test =0;
+
+Token *readNumber(void)
+{
+  Token *tokenFloat = makeToken(TK_FLOAT, lineNo, colNo);
+  Token *tokenNumber = makeToken(TK_NUMBER, lineNo, colNo);
+
+  int count = 0;
+  while (charCodes[currentChar] == CHAR_DIGIT)
+  {
+    tokenFloat->string[count] = (char)currentChar;
+    tokenNumber->string[count] = (char)currentChar;
+
+    count++;
     readChar();
-
-
   }
-  token->string[i] = '\0';
-  token->value=atoi(token->string);
-  return token;
+  tokenNumber->string[count] = '\0';
+  tokenNumber->value = atoi(tokenNumber->string);
+  if (charCodes[currentChar] == CHAR_PERIOD)
+  {
+    tokenFloat->string[count] = (char)currentChar;
+
+    count++;
+    readChar();
+   if(charCodes[currentChar] == CHAR_DIGIT){
+     while (charCodes[currentChar] == CHAR_DIGIT)
+     {
+       tokenFloat->string[count] = (char)currentChar;
+       count++;
+       readChar();
+     }
+     tokenFloat->string[count] = '\0';
+     return tokenFloat;
+   }else{
+     callBack(-2);
+     readChar();
+   
+    
+
+     return tokenNumber;
+   }
+    
+  }
+
+  return tokenNumber;
 }
 
 Token* readConstChar(void) {
@@ -308,6 +346,8 @@ void printToken(Token *token) {
   case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
   case TK_CHAR: printf("TK_CHAR(\'%s\')\n", token->string); break;
   case TK_STRING:printf("TK_STRING(\"%s\")\n", token->string);break;
+  case TK_FLOAT:printf("TK_FLOAT(%s)\n", token->string);
+    break;
   case TK_EOF: printf("TK_EOF\n"); break;
 
   case KW_PROGRAM: printf("KW_PROGRAM\n"); break;
@@ -378,6 +418,7 @@ int main(int argc, char *argv[]) {
     printf("scanner: no input file.\n");
     return -1;
   }
+  
 
   if (scan(argv[1]) == IO_ERROR) {
     printf("Can\'t read input file!\n");

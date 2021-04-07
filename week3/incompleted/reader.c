@@ -21,6 +21,7 @@ int readChar(void) {
   return currentChar;
 }
 
+
 int openInputStream(char *fileName) {
   inputStream = fopen(fileName, "rt");
   if (inputStream == NULL)
@@ -34,4 +35,7 @@ int openInputStream(char *fileName) {
 void closeInputStream() {
   fclose(inputStream);
 }
-
+void callBack(int a)
+{
+  fseek(inputStream, a, SEEK_CUR);
+}
