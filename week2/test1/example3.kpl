@@ -24,7 +24,7 @@ BEGIN
   FOR  N := 1  TO  4  DO  
     BEGIN
       FOR  I:=1  TO  4  DO  
-        CALL  WRITEC('abc');
+        CALL  WRITEC(' ');
       CALL  READC(C);  
       CALL  WRITEC(C)
     END;
@@ -36,4 +36,4 @@ BEGIN
       CALL  HANOI(N,P,Q);  
       CALL  WRITELN  
     END
-END.  (* TOWER OF HANOI 
+END.  (* TOWER OF HANOI *)
